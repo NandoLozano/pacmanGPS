@@ -8,11 +8,17 @@ public class Pacman {
     private int score = 0;
     private Board board;
     private static final int SIZE = 20;
+    private int speed = 4; // Default speed
+    private boolean hasSpeedBoost = false;
 
-    public Pacman(int x, int y, Board board) {
+    public Pacman(int x, int y, Board board, boolean speedBoost) {
         this.x = x;
         this.y = y;
         this.board = board;
+        this.hasSpeedBoost = speedBoost;
+        if (speedBoost) {
+            this.speed = 6; // 50% faster (4 * 1.5 = 6)
+        }
     }
 
     public void draw(Graphics g) {
@@ -32,10 +38,10 @@ public class Pacman {
         int newY = y;
         
         switch (direction) {
-            case LEFT: newX -= 4; break;
-            case RIGHT: newX += 4; break;
-            case UP: newY -= 4; break;
-            case DOWN: newY += 4; break;
+            case LEFT: newX -= speed; break;
+            case RIGHT: newX += speed; break;
+            case UP: newY -= speed; break;
+            case DOWN: newY += speed; break;
         }
         
         // Check collision with walls
@@ -59,10 +65,10 @@ public class Pacman {
         int testY = y;
         
         switch (dir) {
-            case LEFT: testX -= 4; break;
-            case RIGHT: testX += 4; break;
-            case UP: testY -= 4; break;
-            case DOWN: testY += 4; break;
+            case LEFT: testX -= speed; break;
+            case RIGHT: testX += speed; break;
+            case UP: testY -= speed; break;
+            case DOWN: testY += speed; break;
         }
         
         return !board.isWall(testX, testY) && 
@@ -86,6 +92,10 @@ public class Pacman {
     
     public void addScore(int points) {
         score += points;
+    }
+    
+    public void setScore(int score) {
+        this.score = score;
     }
     
     public void reset(int x, int y) {

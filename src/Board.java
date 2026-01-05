@@ -25,21 +25,47 @@ public class Board extends JPanel implements ActionListener {
     private int portalCooldown = 0;
     private static final int PORTAL_COOLDOWN_DURATION = 15; // About 0.6 seconds to prevent infinite loops
     
+    // Ability system
+    private GameAbility selectedAbility;
+    private int lives = 1;
+    private int savedScore = 0;
+    
     // Map elements: 0 = empty, 1 = wall, 2 = dot, 3 = power-up, 4 = portal
     
-    public Board() {
+    public Board(GameAbility ability) {
+        this.selectedAbility = ability;
+        
+        // Set lives based on ability
+        if (ability == GameAbility.THREE_LIVES) {
+            lives = 3;
+        } else {
+            lives = 1;
+        }
+        
         setFocusable(true);
         setBackground(Color.BLACK);
         
         initializeLevels();
         loadLevel(currentLevel);
         
-        pacman = new Pacman(BLOCK_SIZE, BLOCK_SIZE, this);
+        // Create Pacman with speed boost if selected
+        boolean speedBoost = (ability == GameAbility.SPEED_BOOST);
+        pacman = new Pacman(BLOCK_SIZE, BLOCK_SIZE, this, speedBoost);
+        
         ghosts = new Ghost[] {
             new Ghost(18 * BLOCK_SIZE, 18 * BLOCK_SIZE, Color.RED, this),
             new Ghost(1 * BLOCK_SIZE, 18 * BLOCK_SIZE, Color.PINK, this),
             new Ghost(18 * BLOCK_SIZE, 1 * BLOCK_SIZE, Color.CYAN, this)
         };
+        
+        // Activate extra powerup if selected
+        if (ability == GameAbility.EXTRA_POWERUP) {
+            powerUpTimer = POWER_UP_DURATION;
+            for (Ghost ghost : ghosts) {
+                ghost.setEdible(true);
+            }
+        }
+        
         timer = new Timer(40, this);
         timer.start();
         addKeyListener(new PacmanKeyAdapter());
@@ -232,10 +258,42 @@ public class Board extends JPanel implements ActionListener {
             ghosts[0].reset(18 * BLOCK_SIZE, 18 * BLOCK_SIZE);
             ghosts[1].reset(1 * BLOCK_SIZE, 18 * BLOCK_SIZE);
             ghosts[2].reset(18 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+            
+            // Activate extra powerup if ability is selected
+            if (selectedAbility == GameAbility.EXTRA_POWERUP) {
+                powerUpTimer = POWER_UP_DURATION;
+                for (Ghost ghost : ghosts) {
+                    ghost.setEdible(true);
+                }
+            }
         } else {
             // Game won!
             JOptionPane.showMessageDialog(this, "¡Felicidades! Has completado todos los niveles.\nPuntuación final: " + pacman.getScore());
             System.exit(0);
+        }
+    }
+    
+    private void restartLevel() {
+        // Reload the current level (resets dots and power-ups)
+        loadLevel(currentLevel);
+        powerUpTimer = 0; // Reset power-up timer
+        portalCooldown = 0; // Reset portal cooldown
+        
+        // Reset positions
+        pacman.reset(BLOCK_SIZE, BLOCK_SIZE);
+        ghosts[0].reset(18 * BLOCK_SIZE, 18 * BLOCK_SIZE);
+        ghosts[1].reset(1 * BLOCK_SIZE, 18 * BLOCK_SIZE);
+        ghosts[2].reset(18 * BLOCK_SIZE, 1 * BLOCK_SIZE);
+        
+        // Restore saved score
+        pacman.setScore(savedScore);
+        
+        // Activate extra powerup if ability is selected
+        if (selectedAbility == GameAbility.EXTRA_POWERUP) {
+            powerUpTimer = POWER_UP_DURATION;
+            for (Ghost ghost : ghosts) {
+                ghost.setEdible(true);
+            }
         }
     }
     
@@ -293,6 +351,12 @@ public class Board extends JPanel implements ActionListener {
         g.drawString("Score: " + pacman.getScore(), 10, 410);
         g.drawString("Level: " + currentLevel, 320, 410);
         
+        // Draw lives (only for THREE_LIVES ability)
+        if (selectedAbility == GameAbility.THREE_LIVES) {
+            g.setColor(Color.YELLOW);
+            g.drawString("Vidas: " + lives, 180, 410);
+        }
+        
         // Draw power-up indicator
         if (powerUpTimer > 0) {
             g.setColor(Color.ORANGE);
@@ -331,9 +395,17 @@ public class Board extends JPanel implements ActionListener {
                     pacman.addScore(200);
                     ghost.respawn();
                 } else if (!isPoweredUp() || !ghost.isEdible()) {
-                    // Game over (only if not powered up or ghost not edible)
-                    JOptionPane.showMessageDialog(this, "¡Game Over! Los fantasmas te atraparon.\nPuntuación: " + pacman.getScore());
-                    System.exit(0);
+                    // Lost a life
+                    lives--;
+                    if (lives > 0) {
+                        // Still have lives left - restart level but keep score
+                        savedScore = pacman.getScore();
+                        restartLevel();
+                    } else {
+                        // Game over
+                        JOptionPane.showMessageDialog(this, "¡Game Over! Los fantasmas te atraparon.\nPuntuación: " + pacman.getScore());
+                        System.exit(0);
+                    }
                 }
             }
         }

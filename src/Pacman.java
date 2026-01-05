@@ -17,7 +17,7 @@ public class Pacman {
         this.board = board;
         this.hasSpeedBoost = speedBoost;
         if (speedBoost) {
-            this.speed = 5; // 25% faster (was 6, reduced to 5 for better grid alignment)
+            this.speed = 5; // 25% faster than normal speed of 4 (5/4 = 1.25)
         }
     }
 

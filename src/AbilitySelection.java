@@ -55,7 +55,7 @@ public class AbilitySelection extends JPanel {
         
         gbc.gridy++;
         gbc.insets = new Insets(10, 10, 10, 10);
-        JLabel desc2 = new JLabel("<html><i>Tu personaje se mueve un 50% más rápido.<br>Solo tienes 1 vida.</i></html>");
+        JLabel desc2 = new JLabel("<html><i>Tu personaje se mueve un 25% más rápido.<br>Solo tienes 1 vida.</i></html>");
         desc2.setFont(new Font("Arial", Font.PLAIN, 12));
         desc2.setForeground(Color.LIGHT_GRAY);
         add(desc2, gbc);

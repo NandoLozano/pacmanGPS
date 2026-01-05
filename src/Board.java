@@ -187,8 +187,20 @@ public class Board extends JPanel implements ActionListener {
                     for (int j = 0; j < GRID_WIDTH; j++) {
                         if (currentMap[i][j] == 4 && !(i == gridY && j == gridX)) {
                             // Found the other portal, teleport Pacman
-                            int newX = j * BLOCK_SIZE;
-                            int newY = i * BLOCK_SIZE;
+                            // Place Pacman offset from portal to prevent getting stuck
+                            int newX, newY;
+                            if (j == 0) {
+                                // Left portal - place Pacman one block to the right
+                                newX = (j + 1) * BLOCK_SIZE;
+                            } else if (j == GRID_WIDTH - 1) {
+                                // Right portal - place Pacman one block to the left
+                                newX = (j - 1) * BLOCK_SIZE;
+                            } else {
+                                // Middle portal - use portal position
+                                newX = j * BLOCK_SIZE;
+                            }
+                            newY = i * BLOCK_SIZE;
+                            
                             pacman.teleport(newX, newY);
                             portalCooldown = PORTAL_COOLDOWN_DURATION;
                             return;

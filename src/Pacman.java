@@ -4,6 +4,7 @@ import java.awt.event.*;
 public class Pacman {
     private int x, y;
     private Direction direction = Direction.LEFT;
+    private Direction nextDirection = Direction.LEFT; // Buffered direction
     private int score = 0;
     private Board board;
     private static final int SIZE = 20;
@@ -20,6 +21,13 @@ public class Pacman {
     }
 
     public void move() {
+        // Try to use the buffered direction first (easier turning)
+        if (nextDirection != direction) {
+            if (canMove(nextDirection)) {
+                direction = nextDirection;
+            }
+        }
+        
         int newX = x;
         int newY = y;
         
@@ -42,13 +50,30 @@ public class Pacman {
             board.eatDot(x + SIZE/2, y + SIZE/2);
         }
     }
+    
+    private boolean canMove(Direction dir) {
+        int testX = x;
+        int testY = y;
+        
+        switch (dir) {
+            case LEFT: testX -= 4; break;
+            case RIGHT: testX += 4; break;
+            case UP: testY -= 4; break;
+            case DOWN: testY += 4; break;
+        }
+        
+        return !board.isWall(testX, testY) && 
+               !board.isWall(testX + SIZE - 1, testY) &&
+               !board.isWall(testX, testY + SIZE - 1) &&
+               !board.isWall(testX + SIZE - 1, testY + SIZE - 1);
+    }
 
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_LEFT: direction = Direction.LEFT; break;
-            case KeyEvent.VK_RIGHT: direction = Direction.RIGHT; break;
-            case KeyEvent.VK_UP: direction = Direction.UP; break;
-            case KeyEvent.VK_DOWN: direction = Direction.DOWN; break;
+            case KeyEvent.VK_LEFT: nextDirection = Direction.LEFT; break;
+            case KeyEvent.VK_RIGHT: nextDirection = Direction.RIGHT; break;
+            case KeyEvent.VK_UP: nextDirection = Direction.UP; break;
+            case KeyEvent.VK_DOWN: nextDirection = Direction.DOWN; break;
         }
     }
 
@@ -64,6 +89,7 @@ public class Pacman {
         this.x = x;
         this.y = y;
         this.direction = Direction.LEFT;
+        this.nextDirection = Direction.LEFT;
     }
     
     public boolean collidesWith(Ghost ghost) {

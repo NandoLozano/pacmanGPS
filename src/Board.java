@@ -17,7 +17,11 @@ public class Board extends JPanel implements ActionListener {
     private int[][][] levels;
     private int[][] currentMap;
     
-    // Map elements: 0 = empty, 1 = wall, 2 = dot
+    // Power-up system
+    private int powerUpTimer = 0;
+    private static final int POWER_UP_DURATION = 150; // About 6 seconds at 40ms per tick
+    
+    // Map elements: 0 = empty, 1 = wall, 2 = dot, 3 = power-up
     
     public Board() {
         setFocusable(true);
@@ -43,7 +47,7 @@ public class Board extends JPanel implements ActionListener {
         // Level 1: Simple maze
         levels[1] = new int[][] {
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,1},
+            {1,3,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,3,1},
             {1,2,1,1,2,1,1,1,2,1,1,2,1,1,1,2,1,1,2,1},
             {1,2,1,1,2,1,1,1,2,1,1,2,1,1,1,2,1,1,2,1},
             {1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1},
@@ -60,14 +64,14 @@ public class Board extends JPanel implements ActionListener {
             {1,2,1,1,2,1,1,1,2,1,1,2,1,1,1,2,1,1,2,1},
             {1,2,2,1,2,2,2,2,2,2,2,2,2,2,2,2,1,2,2,1},
             {1,1,2,1,2,1,2,1,1,1,1,1,1,2,1,2,1,2,1,1},
-            {1,2,2,2,2,1,2,2,2,1,1,2,2,2,1,2,2,2,2,1},
+            {1,3,2,2,2,1,2,2,2,1,1,2,2,2,1,2,2,2,3,1},
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
         };
         
         // Level 2: More complex maze
         levels[2] = new int[][] {
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1},
+            {1,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,1},
             {1,2,1,1,1,1,2,1,1,1,1,1,1,2,1,1,1,1,2,1},
             {1,2,1,0,0,1,2,1,0,0,0,0,1,2,1,0,0,1,2,1},
             {1,2,1,0,0,1,2,1,0,0,0,0,1,2,1,0,0,1,2,1},
@@ -84,14 +88,14 @@ public class Board extends JPanel implements ActionListener {
             {1,2,2,2,2,2,2,1,0,0,0,0,1,2,2,2,2,2,2,1},
             {1,2,1,1,1,1,2,1,1,1,1,1,1,2,1,1,1,1,2,1},
             {1,2,1,1,1,1,2,2,2,2,2,2,2,2,1,1,1,1,2,1},
-            {1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1},
+            {1,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,1},
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
         };
         
         // Level 3: Advanced maze
         levels[3] = new int[][] {
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,1},
+            {1,3,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,3,1},
             {1,2,1,1,1,1,1,1,2,1,1,2,1,1,1,1,1,1,2,1},
             {1,2,1,0,0,0,0,1,2,1,1,2,1,0,0,0,0,1,2,1},
             {1,2,1,0,1,1,0,1,2,1,1,2,1,0,1,1,0,1,2,1},
@@ -108,7 +112,7 @@ public class Board extends JPanel implements ActionListener {
             {1,2,1,2,1,1,2,1,1,1,1,1,1,2,1,1,2,1,2,1},
             {1,2,1,2,1,1,2,2,2,1,1,2,2,2,1,1,2,1,2,1},
             {1,2,1,2,1,1,1,1,2,1,1,2,1,1,1,1,2,1,2,1},
-            {1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1},
+            {1,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,1},
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
         };
     }
@@ -146,24 +150,37 @@ public class Board extends JPanel implements ActionListener {
                 currentMap[gridY][gridX] = 0; // Remove the dot
                 pacman.addScore(10);
                 checkLevelComplete();
+            } else if (currentMap[gridY][gridX] == 3) {
+                currentMap[gridY][gridX] = 0; // Remove the power-up
+                pacman.addScore(50);
+                powerUpTimer = POWER_UP_DURATION;
+                // Make all ghosts edible
+                for (Ghost ghost : ghosts) {
+                    ghost.setEdible(true);
+                }
             }
         }
     }
     
+    public boolean isPoweredUp() {
+        return powerUpTimer > 0;
+    }
+    
     private void checkLevelComplete() {
-        // Check if all dots are eaten
+        // Check if all dots and power-ups are eaten
         for (int i = 0; i < GRID_HEIGHT; i++) {
             for (int j = 0; j < GRID_WIDTH; j++) {
-                if (currentMap[i][j] == 2) {
-                    return; // Still dots remaining
+                if (currentMap[i][j] == 2 || currentMap[i][j] == 3) {
+                    return; // Still dots or power-ups remaining
                 }
             }
         }
         
-        // All dots eaten, load next level
+        // All items eaten, load next level
         if (currentLevel < 3) {
             currentLevel++;
             loadLevel(currentLevel);
+            powerUpTimer = 0; // Reset power-up timer
             // Reset positions
             pacman.reset(BLOCK_SIZE, BLOCK_SIZE);
             ghosts[0].reset(18 * BLOCK_SIZE, 18 * BLOCK_SIZE);
@@ -207,6 +224,12 @@ public class Board extends JPanel implements ActionListener {
                     // Draw dot
                     g.setColor(Color.WHITE);
                     g.fillOval(x + BLOCK_SIZE/2 - 2, y + BLOCK_SIZE/2 - 2, 4, 4);
+                } else if (currentMap[i][j] == 3) {
+                    // Draw power-up (larger, blinking)
+                    if (powerUpTimer % 20 < 10 || powerUpTimer == 0) {
+                        g.setColor(Color.WHITE);
+                        g.fillOval(x + BLOCK_SIZE/2 - 5, y + BLOCK_SIZE/2 - 5, 10, 10);
+                    }
                 }
             }
         }
@@ -215,6 +238,12 @@ public class Board extends JPanel implements ActionListener {
         g.setColor(Color.YELLOW);
         g.drawString("Score: " + pacman.getScore(), 10, 410);
         g.drawString("Level: " + currentLevel, 320, 410);
+        
+        // Draw power-up indicator
+        if (powerUpTimer > 0) {
+            g.setColor(Color.ORANGE);
+            g.drawString("POWER UP!", 170, 410);
+        }
     }
 
     @Override
@@ -224,11 +253,29 @@ public class Board extends JPanel implements ActionListener {
             ghost.move();
         }
         
+        // Update power-up timer
+        if (powerUpTimer > 0) {
+            powerUpTimer--;
+            if (powerUpTimer == 0) {
+                // Power-up expired, make ghosts normal again
+                for (Ghost ghost : ghosts) {
+                    ghost.setEdible(false);
+                }
+            }
+        }
+        
         // Check collisions with ghosts
         for (Ghost ghost : ghosts) {
             if (pacman.collidesWith(ghost)) {
-                JOptionPane.showMessageDialog(this, "¡Game Over! Los fantasmas te atraparon.\nPuntuación: " + pacman.getScore());
-                System.exit(0);
+                if (isPoweredUp() && ghost.isEdible()) {
+                    // Eat the ghost
+                    pacman.addScore(200);
+                    ghost.respawn();
+                } else if (!ghost.isEdible()) {
+                    // Game over
+                    JOptionPane.showMessageDialog(this, "¡Game Over! Los fantasmas te atraparon.\nPuntuación: " + pacman.getScore());
+                    System.exit(0);
+                }
             }
         }
         

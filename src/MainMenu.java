@@ -4,10 +4,15 @@ import java.awt.event.*;
 
 public class MainMenu extends JPanel {
     private JFrame parentFrame;
-    private GameAbility selectedAbility = GameAbility.THREE_LIVES; // Default
+    private GameAbility selectedAbility;
     
     public MainMenu(JFrame parentFrame) {
+        this(parentFrame, GameAbility.THREE_LIVES); // Default
+    }
+    
+    public MainMenu(JFrame parentFrame, GameAbility ability) {
         this.parentFrame = parentFrame;
+        this.selectedAbility = ability;
         setLayout(new GridBagLayout());
         setBackground(Color.BLACK);
         
@@ -83,7 +88,7 @@ public class MainMenu extends JPanel {
     
     private void returnToMenu() {
         parentFrame.getContentPane().removeAll();
-        parentFrame.add(new MainMenu(parentFrame));
+        parentFrame.add(new MainMenu(parentFrame, selectedAbility));
         parentFrame.revalidate();
         parentFrame.repaint();
     }

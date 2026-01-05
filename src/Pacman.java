@@ -70,11 +70,11 @@ public class Pacman {
         int ghostX = ghost.getX();
         int ghostY = ghost.getY();
         
-        // Simple collision detection using distance
+        // Simple collision detection using squared distance (more efficient)
         int dx = (x + SIZE/2) - (ghostX + SIZE/2);
         int dy = (y + SIZE/2) - (ghostY + SIZE/2);
-        int distance = (int)Math.sqrt(dx*dx + dy*dy);
+        int distanceSquared = dx*dx + dy*dy;
         
-        return distance < SIZE;
+        return distanceSquared < (SIZE*SIZE);
     }
 }

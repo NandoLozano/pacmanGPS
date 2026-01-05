@@ -67,11 +67,18 @@ public class MainMenu extends JPanel {
     
     private void startGame() {
         parentFrame.getContentPane().removeAll();
-        Board board = new Board(selectedAbility);
-        parentFrame.add(board);
+        DifficultySelection difficultySelection = new DifficultySelection(parentFrame, selectedAbility,
+            difficulty -> {
+                Board board = new Board(selectedAbility, difficulty);
+                parentFrame.getContentPane().removeAll();
+                parentFrame.add(board);
+                parentFrame.revalidate();
+                parentFrame.repaint();
+                board.requestFocusInWindow();
+            });
+        parentFrame.add(difficultySelection);
         parentFrame.revalidate();
         parentFrame.repaint();
-        board.requestFocusInWindow();
     }
     
     private void showAbilities() {

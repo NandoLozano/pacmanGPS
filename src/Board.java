@@ -12,6 +12,14 @@ public class Board extends JPanel implements ActionListener {
     private static final int GRID_WIDTH = 20;
     private static final int GRID_HEIGHT = 20;
     
+    // Ghost spawn positions for different difficulty levels
+    private static final int[][] GHOST_SPAWN_POSITIONS = {
+        {18 * 20, 18 * 20},  // Bottom-right
+        {1 * 20, 18 * 20},   // Bottom-left
+        {18 * 20, 1 * 20},   // Top-right
+        {9 * 20, 9 * 20}     // Center (for 4th ghost in hard mode)
+    };
+    
     // Level system
     private int currentLevel = 1;
     private int[][][] levels;
@@ -85,18 +93,12 @@ public class Board extends JPanel implements ActionListener {
                 break;
         }
         
-        // Define ghost spawn positions and colors
+        // Define ghost colors
         Color[] ghostColors = {Color.RED, Color.PINK, Color.CYAN, Color.ORANGE};
-        int[][] spawnPositions = {
-            {18 * BLOCK_SIZE, 18 * BLOCK_SIZE},  // Bottom-right
-            {1 * BLOCK_SIZE, 18 * BLOCK_SIZE},   // Bottom-left
-            {18 * BLOCK_SIZE, 1 * BLOCK_SIZE},   // Top-right
-            {9 * BLOCK_SIZE, 9 * BLOCK_SIZE}     // Center (for 4th ghost in hard mode)
-        };
         
         ghosts = new Ghost[numGhosts];
         for (int i = 0; i < numGhosts; i++) {
-            ghosts[i] = new Ghost(spawnPositions[i][0], spawnPositions[i][1], ghostColors[i], this);
+            ghosts[i] = new Ghost(GHOST_SPAWN_POSITIONS[i][0], GHOST_SPAWN_POSITIONS[i][1], ghostColors[i], this);
         }
     }
     
@@ -285,16 +287,9 @@ public class Board extends JPanel implements ActionListener {
             // Reset positions
             pacman.reset(BLOCK_SIZE, BLOCK_SIZE);
             
-            // Reset ghost positions based on difficulty
-            int[][] spawnPositions = {
-                {18 * BLOCK_SIZE, 18 * BLOCK_SIZE},  // Bottom-right
-                {1 * BLOCK_SIZE, 18 * BLOCK_SIZE},   // Bottom-left
-                {18 * BLOCK_SIZE, 1 * BLOCK_SIZE},   // Top-right
-                {9 * BLOCK_SIZE, 9 * BLOCK_SIZE}     // Center (for 4th ghost in hard mode)
-            };
-            
+            // Reset ghost positions
             for (int i = 0; i < ghosts.length; i++) {
-                ghosts[i].reset(spawnPositions[i][0], spawnPositions[i][1]);
+                ghosts[i].reset(GHOST_SPAWN_POSITIONS[i][0], GHOST_SPAWN_POSITIONS[i][1]);
             }
             
             // Activate extra powerup if ability is selected
@@ -320,16 +315,9 @@ public class Board extends JPanel implements ActionListener {
         // Reset positions
         pacman.reset(BLOCK_SIZE, BLOCK_SIZE);
         
-        // Reset ghost positions based on difficulty
-        int[][] spawnPositions = {
-            {18 * BLOCK_SIZE, 18 * BLOCK_SIZE},  // Bottom-right
-            {1 * BLOCK_SIZE, 18 * BLOCK_SIZE},   // Bottom-left
-            {18 * BLOCK_SIZE, 1 * BLOCK_SIZE},   // Top-right
-            {9 * BLOCK_SIZE, 9 * BLOCK_SIZE}     // Center (for 4th ghost in hard mode)
-        };
-        
+        // Reset ghost positions
         for (int i = 0; i < ghosts.length; i++) {
-            ghosts[i].reset(spawnPositions[i][0], spawnPositions[i][1]);
+            ghosts[i].reset(GHOST_SPAWN_POSITIONS[i][0], GHOST_SPAWN_POSITIONS[i][1]);
         }
         
         // Restore saved score

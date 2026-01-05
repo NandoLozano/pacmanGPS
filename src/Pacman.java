@@ -48,6 +48,9 @@ public class Pacman {
             
             // Check if we can eat a dot at current position
             board.eatDot(x + SIZE/2, y + SIZE/2);
+            
+            // Check if we entered a portal
+            board.checkPortal(x + SIZE/2, y + SIZE/2);
         }
     }
     
@@ -90,6 +93,11 @@ public class Pacman {
         this.y = y;
         this.direction = Direction.LEFT;
         this.nextDirection = Direction.LEFT;
+    }
+    
+    public void teleport(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
     
     public boolean collidesWith(Ghost ghost) {

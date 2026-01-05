@@ -21,7 +21,11 @@ public class Board extends JPanel implements ActionListener {
     private int powerUpTimer = 0;
     private static final int POWER_UP_DURATION = 150; // About 6 seconds (150 ticks * 40ms/tick from Timer)
     
-    // Map elements: 0 = empty, 1 = wall, 2 = dot, 3 = power-up
+    // Portal system
+    private int portalCooldown = 0;
+    private static final int PORTAL_COOLDOWN_DURATION = 15; // About 0.6 seconds to prevent infinite loops
+    
+    // Map elements: 0 = empty, 1 = wall, 2 = dot, 3 = power-up, 4 = portal
     
     public Board() {
         setFocusable(true);
@@ -56,7 +60,7 @@ public class Board extends JPanel implements ActionListener {
             {1,1,1,1,2,1,1,1,0,1,1,0,1,1,1,2,1,1,1,1},
             {1,1,1,1,2,1,0,0,0,0,0,0,0,0,1,2,1,1,1,1},
             {1,1,1,1,2,1,0,1,1,0,0,1,1,0,1,2,1,1,1,1},
-            {0,0,0,0,2,0,0,1,0,0,0,0,1,0,0,2,0,0,0,0},
+            {4,0,0,0,2,0,0,1,0,0,0,0,1,0,0,2,0,0,0,4},
             {1,1,1,1,2,1,0,1,1,1,1,1,1,0,1,2,1,1,1,1},
             {1,1,1,1,2,1,0,0,0,0,0,0,0,0,1,2,1,1,1,1},
             {1,1,1,1,2,1,0,1,1,1,1,1,1,0,1,2,1,1,1,1},
@@ -77,7 +81,7 @@ public class Board extends JPanel implements ActionListener {
             {1,2,1,0,0,1,2,1,0,0,0,0,1,2,1,0,0,1,2,1},
             {1,2,1,1,1,1,2,1,1,1,1,1,1,2,1,1,1,1,2,1},
             {1,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,1},
-            {1,2,1,1,2,1,1,1,2,1,1,2,1,1,1,2,1,1,2,1},
+            {4,2,1,1,2,1,1,1,2,1,1,2,1,1,1,2,1,1,2,4},
             {1,2,1,1,2,1,1,1,2,1,1,2,1,1,1,2,1,1,2,1},
             {1,2,2,2,2,1,1,0,0,0,0,0,0,1,1,2,2,2,2,1},
             {1,1,1,1,2,1,0,0,1,1,1,1,0,0,1,2,1,1,1,1},
@@ -103,7 +107,7 @@ public class Board extends JPanel implements ActionListener {
             {1,2,1,0,0,0,0,1,2,2,2,2,1,0,0,0,0,1,2,1},
             {1,2,1,1,1,1,1,1,2,1,1,2,1,1,1,1,1,1,2,1},
             {1,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,1},
-            {1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1},
+            {4,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,4},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1},
             {1,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,1},
@@ -166,6 +170,35 @@ public class Board extends JPanel implements ActionListener {
         return powerUpTimer > 0;
     }
     
+    // Check and handle portal teleportation for Pacman
+    public void checkPortal(int x, int y) {
+        // Only teleport if cooldown has expired
+        if (portalCooldown > 0) {
+            return;
+        }
+        
+        int gridX = x / BLOCK_SIZE;
+        int gridY = y / BLOCK_SIZE;
+        
+        if (gridX >= 0 && gridX < GRID_WIDTH && gridY >= 0 && gridY < GRID_HEIGHT) {
+            if (currentMap[gridY][gridX] == 4) {
+                // Find the other portal
+                for (int i = 0; i < GRID_HEIGHT; i++) {
+                    for (int j = 0; j < GRID_WIDTH; j++) {
+                        if (currentMap[i][j] == 4 && !(i == gridY && j == gridX)) {
+                            // Found the other portal, teleport Pacman
+                            int newX = j * BLOCK_SIZE;
+                            int newY = i * BLOCK_SIZE;
+                            pacman.teleport(newX, newY);
+                            portalCooldown = PORTAL_COOLDOWN_DURATION;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     private void checkLevelComplete() {
         // Check if all dots and power-ups are eaten
         for (int i = 0; i < GRID_HEIGHT; i++) {
@@ -181,6 +214,7 @@ public class Board extends JPanel implements ActionListener {
             currentLevel++;
             loadLevel(currentLevel);
             powerUpTimer = 0; // Reset power-up timer
+            portalCooldown = 0; // Reset portal cooldown
             // Reset positions
             pacman.reset(BLOCK_SIZE, BLOCK_SIZE);
             ghosts[0].reset(18 * BLOCK_SIZE, 18 * BLOCK_SIZE);
@@ -230,6 +264,14 @@ public class Board extends JPanel implements ActionListener {
                         g.setColor(Color.WHITE);
                         g.fillOval(x + BLOCK_SIZE/2 - 5, y + BLOCK_SIZE/2 - 5, 10, 10);
                     }
+                } else if (currentMap[i][j] == 4) {
+                    // Draw portal (swirling purple/magenta effect)
+                    long time = System.currentTimeMillis();
+                    Color portalColor = ((time / 200) % 2 == 0) ? new Color(255, 0, 255) : new Color(138, 43, 226);
+                    g.setColor(portalColor);
+                    g.fillOval(x + 2, y + 2, BLOCK_SIZE - 4, BLOCK_SIZE - 4);
+                    g.setColor(Color.WHITE);
+                    g.drawOval(x + 4, y + 4, BLOCK_SIZE - 8, BLOCK_SIZE - 8);
                 }
             }
         }
@@ -262,6 +304,11 @@ public class Board extends JPanel implements ActionListener {
                     ghost.setEdible(false);
                 }
             }
+        }
+        
+        // Update portal cooldown
+        if (portalCooldown > 0) {
+            portalCooldown--;
         }
         
         // Check collisions with ghosts

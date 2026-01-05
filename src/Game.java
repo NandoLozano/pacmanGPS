@@ -6,7 +6,7 @@ public class Game extends JFrame {
         add(new MainMenu(this));
         setTitle("Pac-Man");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(400, 450);
+        setSize(500, 600); // Increased size to accommodate ability selection screen
         setLocationRelativeTo(null);
         setResizable(false);
     }

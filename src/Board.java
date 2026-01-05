@@ -274,10 +274,10 @@ public class Board extends JPanel implements ActionListener {
     }
     
     private void restartLevel() {
-        // Reload the current level (resets dots and power-ups)
-        loadLevel(currentLevel);
-        powerUpTimer = 0; // Reset power-up timer
-        portalCooldown = 0; // Reset portal cooldown
+        // DO NOT reload level - we want to keep dots that were already eaten
+        // Only reset power-up timer and portal cooldown
+        powerUpTimer = 0;
+        portalCooldown = 0;
         
         // Reset positions
         pacman.reset(BLOCK_SIZE, BLOCK_SIZE);

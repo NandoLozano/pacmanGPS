@@ -36,7 +36,7 @@ public class Ghost {
     }
 
     public void move() {
-        // Try to change direction occasionally (flee if edible)
+        // Try to change direction occasionally
         if (random.nextInt(10) == 0) {
             direction = Direction.values()[random.nextInt(4)];
         }

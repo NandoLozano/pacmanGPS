@@ -19,7 +19,7 @@ public class Board extends JPanel implements ActionListener {
     
     // Power-up system
     private int powerUpTimer = 0;
-    private static final int POWER_UP_DURATION = 150; // About 6 seconds at 40ms per tick
+    private static final int POWER_UP_DURATION = 150; // About 6 seconds (150 ticks * 40ms/tick from Timer)
     
     // Map elements: 0 = empty, 1 = wall, 2 = dot, 3 = power-up
     
@@ -226,7 +226,7 @@ public class Board extends JPanel implements ActionListener {
                     g.fillOval(x + BLOCK_SIZE/2 - 2, y + BLOCK_SIZE/2 - 2, 4, 4);
                 } else if (currentMap[i][j] == 3) {
                     // Draw power-up (larger, blinking)
-                    if (powerUpTimer % 20 < 10 || powerUpTimer == 0) {
+                    if ((System.currentTimeMillis() / 250) % 2 == 0) {
                         g.setColor(Color.WHITE);
                         g.fillOval(x + BLOCK_SIZE/2 - 5, y + BLOCK_SIZE/2 - 5, 10, 10);
                     }
@@ -271,8 +271,8 @@ public class Board extends JPanel implements ActionListener {
                     // Eat the ghost
                     pacman.addScore(200);
                     ghost.respawn();
-                } else if (!ghost.isEdible()) {
-                    // Game over
+                } else if (!isPoweredUp() || !ghost.isEdible()) {
+                    // Game over (only if not powered up or ghost not edible)
                     JOptionPane.showMessageDialog(this, "¡Game Over! Los fantasmas te atraparon.\nPuntuación: " + pacman.getScore());
                     System.exit(0);
                 }

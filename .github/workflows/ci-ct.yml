@@ -59,9 +59,13 @@ jobs:
         if: always()
         run: |
           echo "Cleaning up temporary files..."
-          # Maven handles cleanup of temporary build files
-          # Removing any additional temporary files if needed
-          find target -name "*.tmp" -type f -delete 2>/dev/null || true
+          # Remove Maven's target directory except for artifacts we're uploading
+          # Keep surefire-reports and site/jacoco for artifact upload
+          if [ -d "target" ]; then
+            find target -type f \( -name "*.tmp" -o -name "*.log" \) -delete 2>/dev/null || true
+            # Clean up Maven's work directories
+            rm -rf target/maven-status target/maven-archiver 2>/dev/null || true
+          fi
           echo "Cleanup completed"
       
       - name: Report test results
@@ -71,11 +75,22 @@ jobs:
             echo "### Test Results Summary" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             
-            # Count test results
-            TESTS=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "tests=" {} \; | sed 's/.*tests="\([0-9]*\)".*/\1/' | awk '{s+=$1} END {print s}')
-            FAILURES=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "failures=" {} \; | sed 's/.*failures="\([0-9]*\)".*/\1/' | awk '{s+=$1} END {print s}')
-            ERRORS=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "errors=" {} \; | sed 's/.*errors="\([0-9]*\)".*/\1/' | awk '{s+=$1} END {print s}')
-            SKIPPED=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h "skipped=" {} \; | sed 's/.*skipped="\([0-9]*\)".*/\1/' | awk '{s+=$1} END {print s}')
+            # Count test results more efficiently with a single pass
+            RESULTS=$(find target/surefire-reports -name "TEST-*.xml" -exec grep -h '<testsuite' {} \; | \
+              awk -F'"' '
+                BEGIN { tests=0; failures=0; errors=0; skipped=0; }
+                {
+                  for(i=1;i<=NF;i++) {
+                    if($i=="tests") tests+=$(i+1);
+                    if($i=="failures") failures+=$(i+1);
+                    if($i=="errors") errors+=$(i+1);
+                    if($i=="skipped") skipped+=$(i+1);
+                  }
+                }
+                END { print tests" "failures" "errors" "skipped; }
+              ')
+            
+            read TESTS FAILURES ERRORS SKIPPED <<< "$RESULTS"
             
             echo "- **Total Tests**: ${TESTS:-0}" >> $GITHUB_STEP_SUMMARY
             echo "- **Failures**: ${FAILURES:-0}" >> $GITHUB_STEP_SUMMARY

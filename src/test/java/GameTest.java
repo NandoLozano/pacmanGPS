@@ -1,9 +1,19 @@
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import javax.swing.JFrame;
+import java.awt.GraphicsEnvironment;
 
 public class GameTest {
+    
+    @BeforeAll
+    public static void checkHeadless() {
+        // Skip all tests in this class if running in headless mode
+        assumeFalse(GraphicsEnvironment.isHeadless(), 
+                    "GUI tests skipped - running in headless environment");
+    }
     
     @Test
     public void testConstructor() {

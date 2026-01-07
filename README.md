@@ -28,7 +28,8 @@ Juego de Pac-Man desarrollado en Java utilizando Swing para la interfaz gráfica
 pacmanGPS/
 ├── .github/
 │   └── workflows/
-│       └── ci-ct.yml              # Workflow de CI/CT con GitHub Actions
+│       ├── ci-ct.yml              # Workflow de CI/CT con GitHub Actions
+│       └── deploy-pages.yml       # Workflow de despliegue a GitHub Pages
 ├── src/
 │   ├── main/
 │   │   └── java/
@@ -54,9 +55,10 @@ pacmanGPS/
 │           ├── GameAbilityTest.java     # Pruebas unitarias para GameAbility
 │           ├── DifficultySelectionTest.java # Pruebas para DifficultySelection
 │           └── AbilitySelectionTest.java    # Pruebas para AbilitySelection
-├── pom.xml                        # Configuración de Maven
-├── .gitignore                     # Archivos ignorados por Git
-└── README.md                      # Este archivo
+├── index.html                   # Landing page para GitHub Pages
+├── pom.xml                      # Configuración de Maven
+├── .gitignore                   # Archivos ignorados por Git
+└── README.md                    # Este archivo
 ```
 
 ## Requisitos
@@ -67,7 +69,18 @@ pacmanGPS/
 
 ## Compilación y Ejecución
 
-### Con Maven
+### Opción 1: Descargar desde GitHub Pages (Recomendado)
+
+La forma más sencilla de ejecutar el juego es descargar el archivo JAR precompilado desde la landing page del proyecto:
+
+1. Visita [https://nandolozano.github.io/pacmanGPS/](https://nandolozano.github.io/pacmanGPS/)
+2. Descarga el archivo `pacman-game-1.0.0.jar`
+3. Ejecuta el juego con el comando:
+   ```bash
+   java -jar pacman-game-1.0.0.jar
+   ```
+
+### Opción 2: Con Maven
 
 Desde la terminal, navega al directorio raíz del proyecto y ejecuta:
 
@@ -79,7 +92,7 @@ mvn clean install
 mvn exec:java -Dexec.mainClass="Game"
 ```
 
-### Con IDE
+### Opción 3: Con IDE
 
 Importa el proyecto Maven en tu IDE preferido y ejecuta la clase `Game.java` como aplicación Java.
 
@@ -110,7 +123,7 @@ El proyecto mantiene una cobertura de código del **100%** para asegurar la cali
 
 ## GitHub Actions
 
-El repositorio incluye integración continua y pruebas continuas (CI/CT) mediante GitHub Actions:
+El repositorio incluye integración continua y despliegue continuo (CI/CD) mediante GitHub Actions:
 
 ### Workflow CI/CT (`ci-ct.yml`)
 
@@ -130,6 +143,21 @@ El repositorio incluye integración continua y pruebas continuas (CI/CT) mediant
 
 **Estado**: Los badges en la parte superior del README muestran el estado actual del build y la cobertura.
 
+### Workflow Deploy to GitHub Pages (`deploy-pages.yml`)
+
+**Activación**: Se ejecuta automáticamente después de que el workflow CI/CT finaliza exitosamente en la rama `main`.
+
+**Proceso**:
+1. **Build JAR**: Compila el proyecto y genera el archivo JAR ejecutable (`mvn clean package -DskipTests`)
+2. **Preparar deployment**: Crea directorio `_site` con el JAR y la landing page (index.html)
+3. **Upload artifact**: Sube el contenido al servicio de GitHub Pages
+4. **Deploy**: Despliega la landing page en GitHub Pages
+5. **Notificación**: Reporta la URL de despliegue exitoso
+
+**Resultado**: El juego está disponible para descarga en una landing page interactiva en GitHub Pages.
+
+**URL de la landing page**: [https://nandolozano.github.io/pacmanGPS/](https://nandolozano.github.io/pacmanGPS/)
+
 ## Extensiones Futuras
 
 - Mejorar la IA de los fantasmas con algoritmos de pathfinding
@@ -141,7 +169,7 @@ El repositorio incluye integración continua y pruebas continuas (CI/CT) mediant
 
 ## Autor
 
-Proyecto desarrollado por [paberlo] y colaboradores.
+Proyecto desarrollado por **NandoLozano** y colaboradores.
 
 ---
 

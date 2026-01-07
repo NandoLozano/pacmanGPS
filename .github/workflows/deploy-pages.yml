@@ -40,9 +40,34 @@ jobs:
       - name: Create deployment directory
         run: |
           mkdir -p _site
-          cp target/*.jar _site/ 2>/dev/null || echo "No JAR file found"
-          cp index.html _site/ 2>/dev/null || echo "No index.html found"
-          cp -r assets _site/ 2>/dev/null || echo "No assets directory found"
+          
+          # Copy JAR file - fail if not found
+          if ls target/*.jar 1> /dev/null 2>&1; then
+            cp target/*.jar _site/
+            echo "✅ JAR file copied successfully"
+          else
+            echo "❌ Error: JAR file not found in target directory"
+            exit 1
+          fi
+          
+          # Copy index.html - fail if not found
+          if [ -f "index.html" ]; then
+            cp index.html _site/
+            echo "✅ index.html copied successfully"
+          else
+            echo "❌ Error: index.html not found"
+            exit 1
+          fi
+          
+          # Copy assets if they exist (optional)
+          if [ -d "assets" ]; then
+            cp -r assets _site/
+            echo "✅ Assets directory copied"
+          else
+            echo "ℹ️ No assets directory found (optional)"
+          fi
+          
+          echo "📦 Deployment directory contents:"
           ls -la _site/
       
       - name: Upload artifact

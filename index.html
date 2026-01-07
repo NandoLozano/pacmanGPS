@@ -418,7 +418,7 @@
             <p style="font-size: 1.2rem; margin-bottom: 30px;">
                 ¡Descarga y juega ahora mismo!
             </p>
-            <a href="pacman-game-1.0.0.jar" class="download-btn" download>
+            <a href="#" id="download-btn" class="download-btn">
                 Descargar PacMan GPS
             </a>
             <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
@@ -533,7 +533,7 @@
             <a href="https://github.com/NandoLozano/pacmanGPS" class="github-link" target="_blank" rel="noopener noreferrer">
                 🐙 Ver en GitHub
             </a>
-            <p style="margin-top: 30px; opacity: 0.7; font-size: 0.9rem;">
+            <p style="margin-top: 30px; opacity: 0.7; font-size: 0.9rem;" id="copyright-year">
                 © 2024 PacMan GPS | Código abierto bajo licencia MIT
             </p>
             <p style="margin-top: 10px; opacity: 0.5; font-size: 0.85rem;">
@@ -543,6 +543,18 @@
     </div>
 
     <script>
+        // Dynamically set download link to the JAR file
+        window.addEventListener('DOMContentLoaded', function() {
+            // Find the JAR file in the current directory
+            // In a real deployment, this will be set by the build process
+            const jarFileName = 'pacman-game-1.0.0.jar';
+            const downloadBtn = document.getElementById('download-btn');
+            if (downloadBtn) {
+                downloadBtn.href = jarFileName;
+                downloadBtn.setAttribute('download', '');
+            }
+        });
+
         // Add smooth scroll behavior
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -564,8 +576,10 @@
 
         // Update copyright year
         const year = new Date().getFullYear();
-        document.querySelector('footer p:nth-last-child(2)').innerHTML = 
-            document.querySelector('footer p:nth-last-child(2)').innerHTML.replace('2024', year);
+        const copyrightElement = document.getElementById('copyright-year');
+        if (copyrightElement) {
+            copyrightElement.innerHTML = copyrightElement.innerHTML.replace('2024', year);
+        }
     </script>
 </body>
 </html>

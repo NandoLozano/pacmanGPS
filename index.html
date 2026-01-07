@@ -132,43 +132,6 @@
             box-shadow: 0 12px 40px 0 rgba(255, 215, 0, 0.2);
         }
 
-        /* Download section */
-        .download-section {
-            text-align: center;
-            padding: 40px;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 159, 0, 0.1) 100%);
-            border-radius: 20px;
-            margin: 30px 0;
-            border: 2px solid var(--pacman-yellow);
-        }
-
-        .download-btn {
-            display: inline-block;
-            padding: 20px 50px;
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: var(--bg-dark);
-            background: linear-gradient(135deg, var(--pacman-yellow) 0%, var(--pacman-orange) 100%);
-            border: none;
-            border-radius: 50px;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .download-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 25px rgba(255, 215, 0, 0.6);
-        }
-
-        .download-btn::before {
-            content: '🎮';
-            margin-right: 10px;
-        }
-
         /* Features grid */
         .features-grid {
             display: grid;
@@ -326,38 +289,9 @@
                 padding: 25px;
             }
 
-            .download-btn {
-                padding: 15px 35px;
-                font-size: 1.2rem;
-            }
-
             .features-grid {
                 grid-template-columns: 1fr;
             }
-        }
-
-        /* Glowing dots animation */
-        .dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--pacman-yellow);
-            border-radius: 50%;
-            margin: 0 4px;
-            animation: glow 1.5s ease-in-out infinite;
-        }
-
-        .dot:nth-child(2) {
-            animation-delay: 0.3s;
-        }
-
-        .dot:nth-child(3) {
-            animation-delay: 0.6s;
-        }
-
-        @keyframes glow {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.7); }
         }
 
         .section-title {
@@ -408,23 +342,6 @@
                 <span class="badge">🎮 Open Source</span>
             </div>
         </header>
-
-        <div class="download-section">
-            <h2 style="color: var(--pacman-yellow); margin-bottom: 20px; font-size: 2rem;">
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-            </h2>
-            <p style="font-size: 1.2rem; margin-bottom: 30px;">
-                ¡Descarga y juega ahora mismo!
-            </p>
-            <a href="#" id="download-btn" class="download-btn">
-                Descargar PacMan GPS
-            </a>
-            <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
-                Requiere Java 17 o superior instalado
-            </p>
-        </div>
 
         <div class="card">
             <h2 class="section-title">✨ Características Principales</h2>
@@ -543,18 +460,6 @@
     </div>
 
     <script>
-        // Dynamically set download link to the JAR file
-        window.addEventListener('DOMContentLoaded', function() {
-            // Find the JAR file in the current directory
-            // In a real deployment, this will be set by the build process
-            const jarFileName = 'pacman-game-1.0.0.jar';
-            const downloadBtn = document.getElementById('download-btn');
-            if (downloadBtn) {
-                downloadBtn.href = jarFileName;
-                downloadBtn.setAttribute('download', '');
-            }
-        });
-
         // Add smooth scroll behavior
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {

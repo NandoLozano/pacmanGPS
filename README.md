@@ -28,7 +28,7 @@ Juego de Pac-Man desarrollado en Java utilizando Swing para la interfaz gráfica
 pacmanGPS/
 ├── .github/
 │   └── workflows/
-│       ├── ci-ct.yml              # Workflow de CI/CT con GitHub Actions
+│       ├── ci-ct.yml              # Workflow de CI/CD con GitHub Actions
 │       └── deploy-pages.yml       # Workflow de despliegue a GitHub Pages
 ├── src/
 │   ├── main/
@@ -125,7 +125,7 @@ El proyecto mantiene una cobertura de código del **100%** para asegurar la cali
 
 El repositorio incluye integración continua y despliegue continuo (CI/CD) mediante GitHub Actions:
 
-### Workflow CI/CT (`ci-ct.yml`)
+### Workflow CI/CD (`ci-ct.yml`)
 
 **Activación**: Se ejecuta automáticamente en cada `push` y `pull_request` a las ramas `main` y `develop`.
 
@@ -145,7 +145,7 @@ El repositorio incluye integración continua y despliegue continuo (CI/CD) media
 
 ### Workflow Deploy to GitHub Pages (`deploy-pages.yml`)
 
-**Activación**: Se ejecuta automáticamente después de que el workflow CI/CT finaliza exitosamente en la rama `main`.
+**Activación**: Se ejecuta automáticamente después de que el workflow CI/CD finaliza exitosamente en la rama `main`.
 
 **Proceso**:
 1. **Build JAR**: Compila el proyecto y genera el archivo JAR ejecutable (`mvn clean package -DskipTests`)

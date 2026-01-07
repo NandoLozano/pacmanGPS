@@ -55,7 +55,7 @@ pacmanGPS/
 │           ├── GameAbilityTest.java     # Pruebas unitarias para GameAbility
 │           ├── DifficultySelectionTest.java # Pruebas para DifficultySelection
 │           └── AbilitySelectionTest.java    # Pruebas para AbilitySelection
-├── index.html                   # Landing page para GitHub Pages
+├── index.html                    # Landing page para GitHub Pages
 ├── pom.xml                      # Configuración de Maven
 ├── .gitignore                   # Archivos ignorados por Git
 └── README.md                    # Este archivo
@@ -73,8 +73,8 @@ pacmanGPS/
 
 La forma más sencilla de ejecutar el juego es descargar el archivo JAR precompilado desde la landing page del proyecto:
 
-1. Visita [https://nandolozano.github.io/pacmanGPS/](https://nandolozano.github.io/pacmanGPS/)
-2. Descarga el archivo `pacman-game-1.0.0.jar`
+1. Visita [https://nandolozano.github.io/pacmanGPS/](https://nandolozano.github.io/pacmanGPS/).
+2. Descarga el archivo `pacman-game-1.0.0.jar`.
 3. Ejecuta el juego con el comando:
    ```bash
    java -jar pacman-game-1.0.0.jar
@@ -130,12 +130,12 @@ El repositorio incluye integración continua y despliegue continuo (CI/CD) media
 **Activación**: Se ejecuta automáticamente en cada `push` y `pull_request` a las ramas `main` y `develop`.
 
 **Proceso**:
-1. **Build**: Compila el proyecto con Maven (`mvn clean install -DskipTests`)
-2. **Test**: Ejecuta todas las pruebas unitarias (`mvn test`)
-3. **Coverage**: Genera reporte de cobertura con JaCoCo (`mvn jacoco:report`)
-4. **Artifacts**: Publica reportes de cobertura y resultados de pruebas como artefactos
-5. **Notificación**: Comenta en los PRs con resultados y actualiza los checks de GitHub
-6. **Cleanup**: Limpia archivos temporales al finalizar
+1. **Build**: Compila el proyecto con Maven (`mvn clean install -DskipTests`).
+2. **Test**: Ejecuta todas las pruebas unitarias (`mvn test`).
+3. **Coverage**: Genera reporte de cobertura con JaCoCo (`mvn jacoco:report`).
+4. **Artifacts**: Publica reportes de cobertura y resultados de pruebas como artefactos.
+5. **Notificación**: Comenta en los PRs con resultados y actualiza los checks de GitHub.
+6. **Cleanup**: Limpia archivos temporales al finalizar.
 
 **Artefactos generados** (disponibles por 30 días):
 - `jacoco-coverage-report`: Reporte de cobertura de código (HTML + jacoco.exec)
@@ -148,11 +148,11 @@ El repositorio incluye integración continua y despliegue continuo (CI/CD) media
 **Activación**: Se ejecuta automáticamente después de que el workflow CI/CD finaliza exitosamente en la rama `main`.
 
 **Proceso**:
-1. **Build JAR**: Compila el proyecto y genera el archivo JAR ejecutable (`mvn clean package -DskipTests`)
-2. **Preparar deployment**: Crea directorio `_site` con el JAR y la landing page (index.html)
-3. **Upload artifact**: Sube el contenido al servicio de GitHub Pages
-4. **Deploy**: Despliega la landing page en GitHub Pages
-5. **Notificación**: Reporta la URL de despliegue exitoso
+1. **Build JAR**: Compila el proyecto y genera el archivo JAR ejecutable (`mvn clean package -DskipTests`).
+2. **Preparar deployment**: Crea directorio `_site` con el JAR y la landing page (index.html).
+3. **Upload artifact**: Sube el contenido al servicio de GitHub Pages.
+4. **Deploy**: Despliega la landing page en GitHub Pages.
+5. **Notificación**: Reporta la URL de despliegue exitoso.
 
 **Resultado**: El juego está disponible para descarga en una landing page interactiva en GitHub Pages.
 
